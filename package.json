@@ -4,14 +4,35 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.14.0",
+    "@stylistic/eslint-plugin-ts": "^2.10.1",
+    "@types/eslint__js": "^8.42.3",
     "@types/node": "^22.9.0",
+    "eslint": "^9.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.14.0"
   },
   "scripts": {
-  "build": "tsc",
-  "start": "node ./dist/index.js",
-  "dev": "ts-node ./src/index.ts"
+    "build": "tsc",
+    "start": "node ./dist/index.js",
+    "dev": "ts-node ./src/index.ts",
+    "lint": "eslint src/**/*.{js,ts}",
+    "lint:fix": "eslint --fix src/**/*.{js,ts}",
+    "format": "prettier --write ./src/**/*.ts",
+    "lint-staged": "lint-staged",
+    "prepare": "husky init"
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
 }
-}
-
