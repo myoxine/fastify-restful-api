@@ -26,7 +26,6 @@ export default [
       },
     },
     rules: {
-      '@stylistic/ts/comma-dangle': ['error', 'always-multiline'],
       '@typescript-eslint/no-floating-promises': ['error'],
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
