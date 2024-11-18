@@ -3,7 +3,45 @@ import fastify from 'fastify';
 import { authRoutes } from './routes/authRoutes';
 import { userRoutes } from './routes/userRoutes';
 
-const server = fastify();
+const server = fastify({
+  ajv: {
+    customOptions: {
+      allErrors: true,
+      keywords: [
+        {
+          keyword: 'exclusiveRange',
+          type: 'number',
+        },
+        {
+          keyword: 'range',
+          type: 'number',
+          compile([min, max], parentSchema) {
+            return parentSchema.exclusiveRange === true
+              ? (data) => data > min && data < max
+              : (data) => data >= min && data <= max;
+          },
+          errors: false,
+          metaSchema: {
+            // schema to validate keyword value
+            type: 'array',
+            items: [{ type: 'number' }, { type: 'number' }],
+            minItems: 2,
+            additionalItems: false,
+          },
+        },
+      ],
+      formats: {
+        phoneNumber: {
+          type: 'string',
+          validate: (value) => {
+            const phoneRegex = /^[0-9]{10,15}$/;
+            return phoneRegex.test(value); // Validasi: hanya angka 10-15 digit
+          },
+        },
+      },
+    },
+  },
+});
 
 server.register(userRoutes, { prefix: '/users' });
 server.register(authRoutes, { prefix: '/auth' });
@@ -18,4 +56,21 @@ server.listen({ port: 8000 }, (err, address) => {
     process.exit(1);
   }
   console.log(`Server listening at ${address}`);
+});
+server.setErrorHandler(function (error, request, reply) {
+  if (error.validation) {
+    return reply.status(400).send({
+      path: request.url,
+      status: error.statusCode,
+      timestamp: Date.now(),
+      message: error.message,
+      errors: error.validation.map((err) => ({
+        key:
+          err.params?.missingProperty ||
+          err.instancePath.replace(new RegExp('/', 'g'), ''),
+        value: err.message,
+      })),
+    });
+  }
+  reply.status(500).send(error);
 });
