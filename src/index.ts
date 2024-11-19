@@ -2,8 +2,10 @@ import fastify from 'fastify';
 
 import { authRoutes } from './routes/authRoutes';
 import { userRoutes } from './routes/userRoutes';
-
+import config from './utils/config';
+import logConfig from './utils/logConfig';
 const server = fastify({
+  logger: logConfig,
   ajv: {
     customOptions: {
       allErrors: true,
@@ -46,11 +48,13 @@ const server = fastify({
 server.register(userRoutes, { prefix: '/users' });
 server.register(authRoutes, { prefix: '/auth' });
 
-server.get('/ping', async () => {
+server.get('/ping', async (request) => {
+  request.log.info('Ada request baru nih!');
   return 'pong\n';
 });
 
-server.listen({ port: 8000 }, (err, address) => {
+// server.listen({ port: 8000 }, (err, address) => {
+server.listen({ port: parseInt(config.PORT) }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
