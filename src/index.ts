@@ -1,3 +1,5 @@
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUi from '@fastify/swagger-ui';
 import fastify from 'fastify';
 
 import { authRoutes } from './routes/authRoutes';
@@ -44,23 +46,24 @@ const server = fastify({
     },
   },
 });
-
-server.register(userRoutes, { prefix: '/users' });
-server.register(authRoutes, { prefix: '/auth' });
-
-server.get('/ping', async (request) => {
-  request.log.info('Ada request baru nih!');
-  return 'pong\n';
-});
-
-// server.listen({ port: 8000 }, (err, address) => {
-server.listen({ port: parseInt(config.PORT) }, (err, address) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-  console.log(`Server listening at ${address}`);
-});
+const swaggerOptions = {
+  swagger: {
+    info: {
+      title: 'My Title', // Judul dokumentasi API
+      description: 'My Description.', // Deskripsi dokumentasi API
+      version: '1.0.0', // Versi API
+    },
+    host: 'localhost', // Host API (misalnya localhost atau domain)
+    schemes: ['http', 'https'], // Protokol yang didukung API (http dan https)
+    consumes: ['application/json'], // Format data yang diterima oleh API (JSON)
+    produces: ['application/json'], // Format data yang dihasilkan oleh API (JSON)
+    tags: [{ name: 'Default', description: 'Default' }], // Kategori/tags API
+  },
+};
+const swaggerUiOptions = {
+  routePrefix: '/docs', // Endpoint di mana Swagger UI bisa diakses
+  exposeRoute: true, // Mengaktifkan route Swagger UI
+};
 server.setErrorHandler(function (error, request, reply) {
   if (error.validation) {
     return reply.status(400).send({
@@ -77,4 +80,22 @@ server.setErrorHandler(function (error, request, reply) {
     });
   }
   reply.status(500).send(error);
+});
+server.register(fastifySwagger, swaggerOptions);
+server.register(fastifySwaggerUi, swaggerUiOptions);
+server.register(userRoutes, { prefix: '/users' });
+server.register(authRoutes, { prefix: '/auth' });
+
+server.get('/ping', async (request) => {
+  request.log.info('Ada request baru nih!');
+  return 'pong\n';
+});
+
+// server.listen({ port: 8000 }, (err, address) => {
+server.listen({ port: parseInt(config.PORT) }, (err, address) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  console.log(`Server listening at ${address}`);
 });
