@@ -30,7 +30,28 @@
     "lint:fix": "eslint --fix src/**/*.{js,ts}",
     "format": "prettier --write ./src/**/*.ts",
     "lint-staged": "lint-staged",
-    "prepare": "husky"
+    "prepare": "husky",
+    "knex:init": "knex init -x ts",
+    "knex:run": "knex --knexfile src/configs/knexfile.ts",
+    "migrate:currentVersion": "npm run knex:run -- migrate:currentVersion",
+    "migrate:make":"npm run knex:run -- migrate:make --",
+    "migrate:list":"npm run knex:run -- migrate:list",
+    "migrate:latest":"npm run knex:run -- migrate:latest --debug",
+    "migrate:rollback": "npm run knex:run -- migrate:rollback --all --debug",
+    "seed:make": "npm run knex:run -- seed:make --",
+    "seed:run": "npm run knex:run -- seed:run --debug",
+    "migrate:development:make": "cross-env NODE_ENV=development npm run migrate:make",
+    "migrate:development:list": "cross-env NODE_ENV=development npm run migrate:list",
+    "migrate:development:latest": "cross-env NODE_ENV=development npm run migrate:latest",
+    "migrate:development:rollback": "cross-env NODE_ENV=development npm run migrate:rollback",
+    "seed:development:make": "cross-env NODE_ENV=development npm run seed:make",
+    "seed:development:run": "cross-env NODE_ENV=development npm run seed:run",
+    "migrate:production:make": "cross-env NODE_ENV=productionnpm run migrate:make",
+    "migrate:production:list": "cross-env NODE_ENV=productionnpm run migrate:list",
+    "migrate:production:latest": "cross-env NODE_ENV=productionnpm run migrate:latest",
+    "migrate:production:rollback": "cross-env NODE_ENV=productionnpm run migrate:rollback",
+    "seed:production:make": "cross-env NODE_ENV=productionnpm run seed:make",
+    "seed:production:run": "cross-env NODE_ENV=productionnpm run seed:run"
   },
   "lint-staged": {
     "src/**/*.{js,ts}": [
@@ -44,6 +65,8 @@
     "ajv-errors": "^3.0.0",
     "env-schema": "^6.0.0",
     "fastify": "^5.1.0",
+    "knex": "^3.1.0",
+    "pg": "^8.13.1",
     "pino-pretty": "^13.0.0"
   }
 }
